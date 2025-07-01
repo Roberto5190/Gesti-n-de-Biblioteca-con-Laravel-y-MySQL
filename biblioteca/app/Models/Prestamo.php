@@ -15,6 +15,15 @@ class Prestamo extends Model
         'fecha_prestamo', 'fecha_devolucion_prevista', 'fecha_devolucion_real',
     ];
 
+    /* <<< NUEVO: convierte las columnas en objetos Carbon >>> */
+    protected $casts = [
+        'fecha_prestamo'            => 'date',     // o 'datetime'
+        'fecha_devolucion_prevista' => 'date',
+        'fecha_devolucion_real'     => 'date',
+    ];
+
+
+
     public function libro()
     {
         return $this->belongsTo(Libro::class);
@@ -24,4 +33,13 @@ class Prestamo extends Model
     {
         return $this->belongsTo(Usuario::class);
     }
+
+
+    //Prestamos vencidos
+    public function scopeVencidos($q)
+    {
+	return $q->whereNull('fecha_devolucion_real')
+		 ->where('fecha_devolucion_prevista', '<', now());
+    }
+
 }

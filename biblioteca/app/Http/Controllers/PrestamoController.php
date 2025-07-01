@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Prestamo;
+
 use Illuminate\Http\Request;
 use App\Models\{Prestamo, Libro, Usuario};
 
@@ -32,18 +32,18 @@ class PrestamoController extends Controller
      */
     public function store(Request $request)
     {
-        $r->validate([
+        $request->validate([
             'libro_id'  => 'required|exists:libros,id',
             'usuario_id'=> 'required|exists:usuarios,id',
         ]);
 
-        $libro = Libro::findOrFail($r->libro_id);
+        $libro = Libro::findOrFail($request->libro_id);
         abort_if($libro->ejemplares_disponibles < 1, 400, 'No hay ejemplares disponibles');
 
         // registrar préstamo
         Prestamo::create([
             'libro_id'                 => $libro->id,
-            'usuario_id'               => $r->usuario_id,
+            'usuario_id'               => $request->usuario_id,
             'fecha_prestamo'           => now(),
             'fecha_devolucion_prevista'=> now()->addDays(14),
         ]);
@@ -92,4 +92,25 @@ class PrestamoController extends Controller
         $prestamo->delete();
         return back();
     }
+
+
+
+
+
+    //VENCIDOS
+    public function vencidos()
+    {
+	$prestamos =  Prestamo::vencidos()
+		->with(['libro','usuario'])
+		->orderBy('fecha_devolucion_prevista')
+		-paginate(10);
+
+	return view('prestamos.vencidos', compact('prestamos'));
+    }
+
+
+
+
+
+
 }

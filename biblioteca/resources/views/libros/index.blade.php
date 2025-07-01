@@ -2,6 +2,32 @@
 @section('title','Listado de Libros')
 @section('content')
 <a href="{{ route('libros.create') }}" class="btn btn-primary mb-3">Nuevo libro</a>
+
+
+
+<form method="GET" action="{{ route('libros.index') }}" class="row g-2 mb-3">
+    <div class="col">
+        <input type="text" name="q"  value="{{ request('q')  }}" class="form-control" placeholder="Título o autor">
+    </div>
+    <div class="col">
+        <input type="number" name="anio" value="{{ request('anio') }}" class="form-control" placeholder="Año">
+    </div>
+    <div class="col">
+        <select name="disp" class="form-select">
+            <option value="">Todos</option>
+            <option value="1" {{ request('disp')==='1' ? 'selected' : '' }}>Solo disponibles</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-secondary">Buscar</button>
+    </div>
+</form>
+
+
+
+
+
+
 <table class="table table-bordered">
     <thead><tr><th>ID</th><th>Título</th><th>Autor</th><th>Ejemplares</th><th>Acciones</th></tr></thead>
     <tbody>

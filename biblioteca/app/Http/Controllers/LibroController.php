@@ -10,10 +10,22 @@ class LibroController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-            $libros = Libro::paginate(10);
-    	    return view('libros.index', compact('libros'));
+	    $libros = Libro::query()
+	        ->when($request->filled('q'), function ($q) use ($request) {
+	            $q->where(function ($sub) use ($request) {
+	                $sub->where('titulo', 'LIKE', "%{$request->q}%")
+	                    ->orWhere('autor', 'LIKE', "%{$request->q}%");
+	            });
+	        })
+	        ->when($request->filled('anio'), fn($q) => $q->where('anio_publicacion', $request->anio))
+	        ->when($request->disp==='1',     fn($q) => $q->disponibles())
+	        ->orderBy('titulo')
+	        ->paginate(10)
+	        ->withQueryString();   // mantiene parámetros en la paginación
+
+	    return view('libros.index', compact('libros'));
     }
 
     /**

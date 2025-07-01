@@ -33,11 +33,7 @@ class Libro extends Model
     //Scope disponibilidad de libros
     public function scopeDisponibles($q)
     {
-	return $q->where('ejemplares_disponibles', '>', 0);
+	return $q->whereColim
     }
-
-
-
-
 
 }
